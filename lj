@@ -112,7 +112,7 @@ function _lumberjack() {
 
   # If the version option is passed, output the version and exit
   if [[ $version ]]; then
-    echo "0.1.0"
+    echo "0.1.1"
     exit 0
   fi
 
