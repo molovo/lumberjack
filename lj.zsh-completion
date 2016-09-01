@@ -14,7 +14,10 @@ _levels=(
   'debug'
 )
 
-(( $+functions[_lumberjack_log_levels])) || _lumberjack_log_levels() {
+###
+# Describe log levels
+###
+function _lumberjack_log_levels() {
   _describe -t levels 'levels' _levels "$@"
 }
 
@@ -25,14 +28,33 @@ function _lumberjack() {
   typeset -A opt_args
   local context state line curcontext="$curcontext"
 
+  # Set option arguments
   _arguments -A \
     '(-h --help)'{-h,--help}'[show help text and exit]' \
     '(-v --version)'{-v,--version}'[show version information and exit]' \
     '(-f --file)'{-f,--file}'[set log file and exit]' \
     '(-l --level)'{-l,--level}'[set log level and exit]' \
 
+  # Set log level arguments
   _arguments \
-    '1: :_lumberjack_log_levels'
+    '1: :_lumberjack_log_levels' \
+    '*::arg:->args'
+
+  # Complete option arguments
+  case "$state" in
+    args )
+      case "$words[1]" in
+        --file|-f )
+          _arguments \
+            '1:file:_files'
+          ;;
+        --level|-l )
+          _arguments \
+            '1:level:_lumberjack_log_levels'
+          ;;
+      esac
+      ;;
+  esac
 }
 
 _lumberjack "$@"
