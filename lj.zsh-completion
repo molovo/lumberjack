@@ -1,0 +1,38 @@
+#compdef lj
+
+###
+# List of log levels
+###
+_levels=(
+  'emergency'
+  'alert'
+  'critical'
+  'error'
+  'warning'
+  'notice'
+  'info'
+  'debug'
+)
+
+(( $+functions[_lumberjack_log_levels])) || _lumberjack_log_levels() {
+  _describe -t levels 'levels' _levels "$@"
+}
+
+###
+# Lumberjack completion
+###
+function _lumberjack() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext"
+
+  _arguments -A \
+    '(-h --help)'{-h,--help}'[show help text and exit]' \
+    '(-v --version)'{-v,--version}'[show version information and exit]' \
+    '(-f --file)'{-f,--file}'[set log file and exit]' \
+    '(-l --level)'{-l,--level}'[set log level and exit]' \
+
+  _arguments \
+    '1: :_lumberjack_log_levels'
+}
+
+_lumberjack "$@"
