@@ -139,11 +139,6 @@ function _lumberjack() {
 
   # Check if we're setting options rather than logging
   if [[ $logfile || $loglevel ]]; then
-    # Create the statefile if it doesn't exist
-    if [[ ! -f $statefile ]]; then
-      mkfifo statefile
-    fi
-
     # Store the state
     echo "$level $file" >! $statefile
 
