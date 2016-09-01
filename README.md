@@ -32,7 +32,7 @@ mv lumberjack/lj /usr/local/bin
 Lumberjack should be called a first time to set the log file and level.
 
 ```sh
-lj —file /usr/local/var/log/myawesomescript.log —level critical
+lj --file /usr/local/var/log/myawesomescript.log --level critical
 ```
 
 Once done, further calls need only contain the level at which that log applies, and the message.
@@ -60,12 +60,12 @@ local level=critical
 [[ $verbose ]] && level=notice
 
 # Initialise lumberjack
-lj —file ~/log —level $level
+lj --file ~/log --level $level
 
 lj 'This is a notice'
 ```
 
-In the above example, running `script.zsh` would result in nothing being output to the log. Running `script.zsh —verbose` would increase the log level, allowing the notice to be appended to the log file.
+In the above example, running `script.zsh` would result in nothing being output to the log. Running `script.zsh --verbose` would increase the log level, allowing the notice to be appended to the log file.
 
 ## TODO
 
