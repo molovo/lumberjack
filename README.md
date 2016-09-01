@@ -12,7 +12,7 @@ Lumberjack handles your logs for you. When you set a logfile and log level, it i
 
 Although lumberjack can be used within any script, ZSH 5+ must be installed and in your $PATH in order to run it.
 
-### Zulu
+### [Zulu](https://github.com/zulu-zsh/zulu)
 
 ```sh
 zulu install lumberjack
