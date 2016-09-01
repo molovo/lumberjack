@@ -1,0 +1,158 @@
+#!/usr/bin/env zsh
+
+# Create a mapping of log levels to their names
+typeset -A _log_levels
+_log_levels=(
+  'emergency' 0
+  'alert'     1
+  'critical'  2
+  'error'     3
+  'warning'   4
+  'notice'    5
+  'info'      6
+  'debug'     7
+)
+
+###
+# Output usage information and exit
+###
+function _lumberjack_usage() {
+  echo "\033[0;33mUsage:\033[0;m"
+  echo "  lj [options] [<level>] <message>"
+  echo
+  echo "\033[0;33mOptions:\033[0;m"
+  echo "  -h, --help      Output help text and exit"
+  echo "  -v, --version   Output version information and exit"
+  echo "  -f, --file      Set the logfile and exit"
+  echo "  -l, --level     Set the log level and exit"
+  echo
+  echo "\033[0;33mLevels:\033[0;m"
+  echo "  emergency"
+  echo "  alert"
+  echo "  critical"
+  echo "  error"
+  echo "  warning"
+  echo "  notice"
+  echo "  info"
+  echo "  debug"
+}
+
+###
+# Output the message to the logfile
+###
+function _lumberjack_message() {
+  local level="$1" file="$2" logtype="$3" msg="${(@)@:4}"
+
+  # If the file string is empty, output an error message
+  if [[ -z $file ]]; then
+    echo "\033[0;31mNo logfile has been set for this process. Use \`lumberjack --file /path/to/file\` to set it\033[0;m"
+    exit 1
+  fi
+
+  # If the level is not set, assume 5 (notice)
+  if [[ -z $level ]]; then
+    level=5
+  fi
+
+  case $logtype in
+    # If a valid logtype is passed
+    emergency|alert|critical|error|warning|notice|info|debug )
+      # We do nothing here
+      ;;
+    # In all other cases
+    * )
+      # Second argument was not a log level, so manually set it to notice
+      # and include the first parameter in the message
+      logtype='notice'
+      msg="${(@)@:3}"
+      ;;
+  esac
+
+  if [[ $_log_levels[$logtype] > $level ]]; then
+    # The message being recorded is for a higher log level than the one
+    # currently being recorded, so gracefully exit
+    exit 0
+  fi
+
+  # Output the message to the logfile
+  echo "[$(echo $logtype | tr '[a-z]' '[A-Z]')] [$(date '+%Y-%m-%d %H:%M:%S')] $msg" >> $file
+}
+
+###
+# The main lumberjack process
+###
+function _lumberjack() {
+  local help version logfile loglevel dir statefile state
+
+  # Create the state directory if it doesn't exist
+  dir="${ZDOTDIR:-$HOME}/.lumberjack"
+  if [[ ! -d $dir ]]; then
+    mkdir -p $dir
+  fi
+
+  # If a statefile already exists, load the level and file
+  statefile="$dir/$PPID"
+  if [[ -f $statefile ]]; then
+    state=$(cat $statefile)
+    level="$state[1]"
+    file="${(@)state:2}"
+  fi
+
+  # Parse CLI options
+  zparseopts -D h=help -help=help \
+                v=version -version=version \
+                f:=logfile -file:=logfile \
+                l:=loglevel -level:=loglevel
+
+  # If the help option is passed, output usage information and exit
+  if [[ $help ]]; then
+    _lumberjack_usage
+    exit 0
+  fi
+
+  # If the version option is passed, output the version and exit
+  if [[ $version ]]; then
+    echo "0.1.0"
+    exit 0
+  fi
+
+  # If the logfile option is passed, set the current logfile
+  # for the parent process ID
+  if [[ $logfile ]]; then
+    shift logfile
+    file=$(realpath $logfile)
+
+    # Create the log file if it doesn't exist
+    if [[ ! -f $file ]]; then
+      touch $file
+    fi
+  fi
+
+  # If the loglevel option is passed, set the current loglevel
+  # for the parent process ID
+  if [[ $loglevel ]]; then
+    shift loglevel
+    level=$_log_levels[$loglevel]
+  elif [[ -z $level ]]; then
+    level=5
+  fi
+
+  # Check if we're setting options rather than logging
+  if [[ $logfile || $loglevel ]]; then
+    # Create the statefile if it doesn't exist
+    if [[ ! -f $statefile ]]; then
+      mkfifo statefile
+    fi
+
+    # Store the state
+    echo "$level $file" >! $statefile
+
+    # Exit gracefully
+    exit 0
+  fi
+
+  # Log the message
+  _lumberjack_message "$level" "$file" "$@"
+}
+
+_lumberjack "$@"
