@@ -82,7 +82,7 @@ function _lumberjack_message() {
 # The main lumberjack process
 ###
 function _lumberjack() {
-  local help version logfile loglevel dir statefile state
+  local help version logfile loglevel close dir statefile state
 
   # Create the state directory if it doesn't exist
   dir="${ZDOTDIR:-$HOME}/.lumberjack"
@@ -102,7 +102,8 @@ function _lumberjack() {
   zparseopts -D h=help -help=help \
                 v=version -version=version \
                 f:=logfile -file:=logfile \
-                l:=loglevel -level:=loglevel
+                l:=loglevel -level:=loglevel \
+                c=close -close=close
 
   # If the help option is passed, output usage information and exit
   if [[ $help ]]; then
@@ -113,6 +114,15 @@ function _lumberjack() {
   # If the version option is passed, output the version and exit
   if [[ $version ]]; then
     echo "0.1.1"
+    exit 0
+  fi
+
+  # If the close option is passed, delete the statefile and exit
+  if [[ $close ]]; then
+    if [[ -f $statefile ]]; then
+      rm $statefile
+    fi
+
     exit 0
   fi
 
