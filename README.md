@@ -67,6 +67,12 @@ lj 'This is a notice'
 
 In the above example, running `script.zsh` would result in nothing being output to the log. Running `script.zsh --verbose` would increase the log level, allowing the notice to be appended to the log file.
 
+Once you've finished processing, you can end the current session by calling:
+
+```sh
+lj --close
+```
+
 ## TODO
 
 * Allow log format to be modified

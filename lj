@@ -25,6 +25,7 @@ function _lumberjack_usage() {
   echo "  -v, --version   Output version information and exit"
   echo "  -f, --file      Set the logfile and exit"
   echo "  -l, --level     Set the log level and exit"
+  echo "  -c, --close     End the current session and exit"
   echo
   echo "\033[0;33mLevels:\033[0;m"
   echo "  emergency"
