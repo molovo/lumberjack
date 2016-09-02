@@ -85,7 +85,7 @@ function _lumberjack() {
   local help version logfile loglevel close dir statefile state
 
   # Create the state directory if it doesn't exist
-  dir="${ZDOTDIR:-$HOME}/.lumberjack"
+  dir=${LUMBERJACK_DIR:-"${ZDOTDIR:-$HOME}/.lumberjack"}
   if [[ ! -d $dir ]]; then
     mkdir -p $dir
   fi
