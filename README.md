@@ -70,6 +70,7 @@ In the above example, running `script.zsh` would result in nothing being output 
 ## TODO
 
 * Allow log format to be modified
+* Add additional drivers for send logs to services like [Sentry](http://sentry.io) etc.
 
 ## License
 
