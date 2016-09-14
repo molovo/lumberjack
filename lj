@@ -105,22 +105,22 @@ function _lumberjack() {
                 l:=loglevel -level:=loglevel
 
   # If the help option is passed, output usage information and exit
-  if [[ $help ]]; then
+  if [[ -n $help ]]; then
     _lumberjack_usage
     exit 0
   fi
 
   # If the version option is passed, output the version and exit
-  if [[ $version ]]; then
+  if [[ -n $version ]]; then
     echo "0.1.1"
     exit 0
   fi
 
   # If the logfile option is passed, set the current logfile
   # for the parent process ID
-  if [[ $logfile ]]; then
+  if [[ -n $logfile ]]; then
     shift logfile
-    file=$(realpath $logfile)
+    file=$logfile
 
     # Create the log file if it doesn't exist
     if [[ ! -f $file ]]; then
@@ -130,7 +130,7 @@ function _lumberjack() {
 
   # If the loglevel option is passed, set the current loglevel
   # for the parent process ID
-  if [[ $loglevel ]]; then
+  if [[ -n $loglevel ]]; then
     shift loglevel
     level=$_log_levels[$loglevel]
   elif [[ -z $level ]]; then
@@ -138,7 +138,7 @@ function _lumberjack() {
   fi
 
   # Check if we're setting options rather than logging
-  if [[ $logfile || $loglevel ]]; then
+  if [[ -n $logfile || -n $loglevel ]]; then
     # Store the state
     echo "$level $file" >! $statefile
 
