@@ -133,7 +133,9 @@ function _lumberjack() {
   if [[ -n $loglevel ]]; then
     shift loglevel
     level=$_log_levels[$loglevel]
-  elif [[ -z $level ]]; then
+  fi
+
+  if [[ -z $level ]]; then
     level=5
   fi
 
